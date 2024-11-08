@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-State Process Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            text-align: center;
+        }
+        .state-box {
+            display: inline-block;
+            width: 200px;
+            padding: 15px;
+            margin: 10px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            background-color: #b3e5fc;
+        }
+        .log-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            background-color: #ffffff;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #0288d1;
+            border-radius: 5px;
+            width: 50px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #0288d1;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0277bd;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Two-State Process Simulation</h1>
+
+    <div class="state-box" id="notRunningState">Not Running<br><span id="notRunningProcesses">None</span></div>
+    <div class="state-box" id="runningState">Running<br><span id="runningProcesses">None</span></div>
+<div>
+    <input type="text" id="processInput" placeholder="ID">
+    <button onclick="createProcess()">Create Process</button>
+    <button onclick="moveToRunning()">Move to Running</button>
+    <button onclick="moveToNotRunning()">Move to Not Running</button>
+    </div>
+
+
+    <div class="log-box" id="log"></div>
+
+    <script>
+        let notRunningProcesses = [];
+        let runningProcesses = [];
+
+        function updateDisplay() {
+    document.getElementById('notRunningProcesses').innerHTML = notRunningProcesses.length ? notRunningProcesses.join('<br>') : 'None';
+    document.getElementById('runningProcesses').innerHTML = runningProcesses.length ? runningProcesses.join('<br>') : 'None';
+}
+
+
+        function logAction(action) {
+            const logBox = document.getElementById('log');
+            logBox.innerHTML += action + "<br>";
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function createProcess() {
+            const processId = document.getElementById('processInput').value.trim();
+            if (processId && !notRunningProcesses.includes(processId) && !runningProcesses.includes(processId)) {
+                notRunningProcesses.push(processId);
+                logAction(`Process ${processId} created and added to Not Running state.`);
+                updateDisplay();
+            } else {
+                logAction(`Process ID ${processId} is already in use or empty.`);
+            }
+            document.getElementById('processInput').value = '';
+        }
+
+        function moveToRunning() {
+            if (notRunningProcesses.length > 0 && runningProcesses.length === 0) {
+                const processId = notRunningProcesses.shift();
+                runningProcesses.push(processId);
+                logAction(`Process ${processId} moved to Running state.`);
+                updateDisplay();
+            } else if (runningProcesses.length > 0) {
+                logAction(`Running state is occupied. Cannot move new process.`);
+            } else {
+                logAction("No process in Not Running state to move to Running.");
+            }
+        }
+
+        function moveToNotRunning() {
+            if (runningProcesses.length > 0) {
+                const processId = runningProcesses.shift();
+                notRunningProcesses.push(processId);
+                logAction(`Process ${processId} moved back to Not Running state.`);
+                updateDisplay();
+            } else {
+                logAction("No process in Running state to move to Not Running.");
+            }
+        }
+
+        // Initial display update
+        updateDisplay();
+    </script>
+</body>
+</html>

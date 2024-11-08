@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three-State Process Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            text-align: center;
+        }
+        .state-box {
+            display: inline-block;
+            width: 200px;
+            padding: 15px;
+            margin: 10px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            background-color: #b3e5fc;
+        }
+        .log-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            background-color: #ffffff;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #0288d1;
+            border-radius: 5px;
+            width: 50px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #0288d1;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0277bd;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Three-State Process Simulation</h1>
+
+    <div class="state-box" id="readyState">Ready<br><span id="readyProcesses">None</span></div>
+    <div class="state-box" id="runningState">Running<br><span id="runningProcesses">None</span></div>
+    <div class="state-box" id="blockedState">Blocked<br><span id="blockedProcesses">None</span></div>
+    <div>
+
+    <input type="text" id="processInput" placeholder="ID">
+    <button onclick="createProcess()">Create Process</button>
+    <button onclick="moveToRunning()">Move to Running</button>
+    <button onclick="moveToBlocked()">Move to Blocked</button>
+    <button onclick="unblockProcess()">Unblock Process</button>
+    <button onclick="terminateProcess()">Terminate Process</button>
+    </div>
+
+    <div class="log-box" id="log"></div>
+
+    <script>
+        let readyProcesses = [];
+        let runningProcesses = [];
+        let blockedProcesses = [];
+
+        function updateDisplay() {
+            document.getElementById('readyProcesses').innerHTML = readyProcesses.length ? readyProcesses.join('<br>') : 'None';
+            document.getElementById('runningProcesses').innerHTML = runningProcesses.length ? runningProcesses.join('<br>') : 'None';
+            document.getElementById('blockedProcesses').innerHTML = blockedProcesses.length ? blockedProcesses.join('<br>') : 'None';
+        }
+
+        function logAction(action) {
+            const logBox = document.getElementById('log');
+            logBox.innerHTML += action + "<br>";
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function createProcess() {
+            const processId = document.getElementById('processInput').value.trim();
+            if (processId && !readyProcesses.includes(processId) && !runningProcesses.includes(processId) && !blockedProcesses.includes(processId)) {
+                readyProcesses.push(processId);
+                logAction(`Process ${processId} created and moved to Ready state.`);
+                updateDisplay();
+            } else {
+                logAction(`Process ID ${processId} is already in use or empty.`);
+            }
+            document.getElementById('processInput').value = '';
+        }
+
+        function moveToRunning() {
+            if (readyProcesses.length > 0 && runningProcesses.length === 0) {
+                const processId = readyProcesses.shift();
+                runningProcesses.push(processId);
+                logAction(`Process ${processId} moved to Running state.`);
+                updateDisplay();
+            } else if (runningProcesses.length > 0) {
+                logAction(`Running state is occupied. Cannot move new process.`);
+            } else {
+                logAction("No process in Ready state to move to Running.");
+            }
+        }
+
+        function moveToBlocked() {
+            if (runningProcesses.length > 0) {
+                const processId = runningProcesses.shift();
+                blockedProcesses.push(processId);
+                logAction(`Process ${processId} moved to Blocked state.`);
+                updateDisplay();
+            } else {
+                logAction("No process in Running state to move to Blocked.");
+            }
+        }
+
+        function unblockProcess() {
+            if (blockedProcesses.length > 0) {
+                const processId = blockedProcesses.shift();
+                readyProcesses.push(processId);
+                logAction(`Process ${processId} unblocked and moved to Ready state.`);
+                updateDisplay();
+            } else {
+                logAction("No process in Blocked state to unblock.");
+            }
+        }
+
+        function terminateProcess() {
+            if (runningProcesses.length > 0) {
+                const processId = runningProcesses.shift();
+                runningProcesses.pop(processId);
+                logAction(`Process ${processId} moved to Exit state.`);
+                updateDisplay();
+                checkSuspendedQueues();
+            } else {
+                logAction("No process in Running state to terminate.");
+            }
+        }
+
+        // Initial display update
+        updateDisplay();
+    </script>
+</body>
+</html>

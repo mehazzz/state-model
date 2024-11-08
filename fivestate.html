@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Five-State Process Simulation with Exit State</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            text-align: center;
+        }
+        .state-box {
+            display: inline-block;
+            width: 150px;
+            padding: 15px;
+            margin: 10px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            background-color: #b3e5fc;
+        }
+        .log-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #0288d1;
+            border-radius: 8px;
+            background-color: #ffffff;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #0288d1;
+            border-radius: 5px;
+            width: 50px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #0288d1;
+            color: #ffffff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Five-State Process Simulation with Exit State</h1>
+
+    <div class="state-box" id="newState">New<br><span id="newProcesses">None</span></div>
+    <div class="state-box" id="readyState">Ready<br><span id="readyProcesses">None</span></div>
+    <div class="state-box" id="runningState">Running<br><span id="runningProcesses">None</span></div>
+    <div class="state-box" id="readySuspendState">Ready Suspend<br><span id="readySuspendProcesses">None</span></div>
+    <div class="state-box" id="blockedState">Blocked<br><span id="blockedProcesses">None</span></div>
+    <div class="state-box" id="blockedSuspendState">Blocked Suspend<br><span id="blockedSuspendProcesses">None</span></div>
+    <div class="state-box" id="exitState">Exit<br><span id="exitProcesses">None</span></div>
+
+    <input type="text" id="processInput" placeholder="ID">
+    <button onclick="createProcess()">Create Process</button>
+    <button onclick="moveToRunning()">Move to Running</button>
+    <button onclick="moveToReady()">Move to Ready</button>
+    <button onclick="moveToBlocked()">Move to Blocked</button>
+    <button onclick="unblockProcess()">Unblock Process</button>
+    <button onclick="terminateProcess()">Terminate Process</button>
+
+    <div class="log-box" id="log"></div>
+
+    <script>
+        let newProcesses = [];
+        let readyProcesses = [];
+        let runningProcesses = [];
+        let readySuspendProcesses = [];
+        let blockedProcesses = [];
+        let blockedSuspendProcesses = [];
+        let exitProcesses = [];
+
+        const READY_LIMIT = 3;
+        const READY_SUSPEND_LIMIT = 2;
+        const BLOCKED_SUSPEND_LIMIT = 2;
+
+        function updateDisplay() {
+            document.getElementById('newProcesses').innerText = newProcesses.length ? newProcesses.join(', ') : 'None';
+            document.getElementById('readyProcesses').innerText = readyProcesses.length ? readyProcesses.join(', ') : 'None';
+            document.getElementById('runningProcesses').innerText = runningProcesses.length ? runningProcesses.join(', ') : 'None';
+            document.getElementById('readySuspendProcesses').innerText = readySuspendProcesses.length ? readySuspendProcesses.join(', ') : 'None';
+            document.getElementById('blockedProcesses').innerText = blockedProcesses.length ? blockedProcesses.join(', ') : 'None';
+            document.getElementById('blockedSuspendProcesses').innerText = blockedSuspendProcesses.length ? blockedSuspendProcesses.join(', ') : 'None';
+            document.getElementById('exitProcesses').innerText = exitProcesses.length ? exitProcesses.join(', ') : 'None';
+        }
+
+        function logAction(action) {
+            const logBox = document.getElementById('log');
+            logBox.innerHTML += action + "<br>";
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function createProcess() {
+            const processId = document.getElementById('processInput').value.trim();
+            if (processId && !newProcesses.includes(processId) && !readyProcesses.includes(processId) &&
+                !runningProcesses.includes(processId) && !readySuspendProcesses.includes(processId) &&
+                !blockedProcesses.includes(processId) && !blockedSuspendProcesses.includes(processId) &&
+                !exitProcesses.includes(processId)) {
+
+                newProcesses.push(processId);
+                logAction(`Process ${processId} created and moved to New state.`);
+                updateDisplay();
+            }
+            document.getElementById('processInput').value = '';
+        }
+
+        function moveToReady() {
+            if (newProcesses.length > 0) {
+                const processId = newProcesses.shift();
+                if (readyProcesses.length < READY_LIMIT) {
+                    readyProcesses.push(processId);
+                    logAction(`Process ${processId} moved to Ready state.`);
+                } else if (readySuspendProcesses.length < READY_SUSPEND_LIMIT) {
+                    readySuspendProcesses.push(processId);
+                    logAction(`Process ${processId} moved to Ready Suspend due to full Ready queue.`);
+                } else {
+                    logAction(`Process ${processId} could not enter Ready Suspend; limit reached.`);
+                }
+                updateDisplay();
+            }
+            checkSuspendedQueues();
+        }
+
+        function moveToRunning() {
+            if (readyProcesses.length > 0 && runningProcesses.length === 0) {
+                const processId = readyProcesses.shift();
+                runningProcesses.push(processId);
+                logAction(`Process ${processId} moved to Running state.`);
+                updateDisplay();
+                checkSuspendedQueues();
+            } else if (runningProcesses.length > 0) {
+                logAction(`Running state is occupied. Cannot move new process.`);
+            }
+        }
+        function moveToBlocked() {
+    if (runningProcesses.length > 0) {
+        const processId = runningProcesses.shift();
+        if (blockedProcesses.length < BLOCKED_SUSPEND_LIMIT) {
+            blockedProcesses.push(processId);
+            logAction(`Process ${processId} moved to Blocked state.`);
+        } else if (blockedSuspendProcesses.length < BLOCKED_SUSPEND_LIMIT) {
+            blockedSuspendProcesses.push(processId);
+            logAction(`Process ${processId} moved to Blocked Suspend due to full Blocked queue.`);
+        } else {
+            logAction(`Process ${processId} could not enter Blocked Suspend; limit reached.`);
+        }
+        updateDisplay();
+    } else {
+        logAction("No process in Running state to move to Blocked.");
+    }
+    checkSuspendedQueues();
+}
+
+        
+
+        function unblockProcess() {
+            if (blockedProcesses.length > 0) {
+                const processId = blockedProcesses.shift();
+                if (readyProcesses.length < READY_LIMIT) {
+                    readyProcesses.push(processId);
+                    logAction(`Process ${processId} moved from Blocked to Ready state.`);
+                } else if (readySuspendProcesses.length < READY_SUSPEND_LIMIT) {
+                    readySuspendProcesses.push(processId);
+                    logAction(`Process ${processId} moved from Blocked to Ready Suspend due to full Ready queue.`);
+                } else {
+                    logAction(`Process ${processId} could not enter Ready Suspend; limit reached.`);
+                }
+                updateDisplay();
+                checkSuspendedQueues();
+            } else {
+                logAction("No process in Blocked state to unblock.");
+            }
+        }
+
+        function terminateProcess() {
+            if (runningProcesses.length > 0) {
+                const processId = runningProcesses.shift();
+                exitProcesses.push(processId);
+                logAction(`Process ${processId} moved to Exit state.`);
+                updateDisplay();
+                checkSuspendedQueues();
+            } else {
+                logAction("No process in Running state to terminate.");
+            }
+        }
+
+       
+
+       
+
+function checkSuspendedQueues() {
+    // Move from Ready Suspend to Ready if space is available
+    while (readyProcesses.length < READY_LIMIT && readySuspendProcesses.length > 0) {
+        const processId = readySuspendProcesses.shift();
+        readyProcesses.push(processId);
+        logAction(`Process ${processId} moved from Ready Suspend to Ready state.`);
+    }
+
+    // Move from Blocked Suspend to Blocked if space is available
+    while (blockedProcesses.length < BLOCKED_SUSPEND_LIMIT && blockedSuspendProcesses.length > 0) {
+        const processId = blockedSuspendProcesses.shift();
+        blockedProcesses.push(processId);
+        logAction(`Process ${processId} moved from Blocked Suspend to Blocked state.`);
+    }
+
+    updateDisplay();
+}
+
+    </script>
+</body>
+</html>
