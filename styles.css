@@ -1,0 +1,105 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f7f9fc; /* Light grey background for a clean look */
+  color: #333; /* Dark text color for readability */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Container Styles */
+.container {
+  max-width: 1200px; /* Increased max width for spacious layout */
+  padding: 30px;
+  border-radius: 15px;
+  background: #ffffff; /* Solid white container background */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Header Styles */
+h1 {
+  font-size: 3em; /* Larger title font size */
+  margin-bottom: 40px;
+  color: #2c3e50; /* Darker title color for contrast */
+}
+
+/* Card Container Styles */
+.card-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px; /* Add space between cards */
+}
+
+/* Card Styles */
+.card {
+  width: 300px; /* Fixed width for cards */
+  height: 400px; /* Fixed height for cards */
+  perspective: 1000px; /* Enable 3D perspective for flip effect */
+}
+
+/* Inner Card Styles */
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d; /* Preserve 3D for children */
+}
+
+/* Card Hover Effect */
+.card:hover .card-inner {
+  transform: rotateY(180deg); /* Flip effect on hover */
+}
+
+/* Front and Back Styles */
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden; /* Hide the back face when flipped */
+  border-radius: 15px; /* Rounded corners */
+  display: flex;
+  flex-direction: column; /* Allow text to stack vertically */
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  font-size: 1.2em; /* Adjusted font size for better readability */
+  padding: 20px;
+  box-sizing: border-box; /* Include padding in width/height */
+}
+
+/* Front Card Styles */
+.card-front {
+  background-color: #3498db; /* Official blue color */
+  color: white; /* White text for contrast */
+}
+
+/* Back Card Styles */
+.card-back {
+  background-color: #2ecc71; /* Official green color */
+  color: white; /* White text for contrast */
+  transform: rotateY(180deg); /* Start back face rotated */
+}
+
+/* Heading Styles for Cards */
+h2 {
+  font-size: 1.5em; /* Slightly smaller heading for card content */
+  margin: 10px 0; /* Margin for spacing */
+}
+
+/* Paragraph Styles for Cards */
+p {
+  font-size: 1em; /* Adjusted paragraph font size */
+  text-align: center; /* Center align text */
+}
+
+/* Card Hover Effect */
+.card:hover {
+  transform: scale(1.05); /* Slightly enlarge on hover */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
