@@ -1,7 +1,7 @@
 /* General Styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f7f9fc; /* Light grey background for a clean look */
+  background-color: #0d0d0d; /* Light grey background for a clean look */
   color: #333; /* Dark text color for readability */
   margin: 0;
   padding: 0;
@@ -10,7 +10,15 @@ body {
   align-items: center;
   height: 100vh;
   text-align: center;
+
+
+  
+        background-image: url('background.webp');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
 }
+  
 
 /* Container Styles */
 .container {
@@ -23,9 +31,10 @@ body {
 
 /* Header Styles */
 h1 {
-  font-size: 3em; /* Larger title font size */
+  font-size: 4em; /* Larger title font size */
   margin-bottom: 40px;
   color: #2c3e50; /* Darker title color for contrast */
+  font-weight: bolder;
 }
 
 /* Card Container Styles */
@@ -75,14 +84,14 @@ h1 {
 
 /* Front Card Styles */
 .card-front {
-  background-color: #3498db; /* Official blue color */
+  background-color: #3c0244; /* Official blue color */
   color: white; /* White text for contrast */
 }
 
 /* Back Card Styles */
 .card-back {
-  background-color: #2ecc71; /* Official green color */
-  color: white; /* White text for contrast */
+  background-color: #edc6f5; /* Official green color */
+  color: rgb(3, 3, 3); /* White text for contrast */
   transform: rotateY(180deg); /* Start back face rotated */
 }
 
