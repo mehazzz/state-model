@@ -5,71 +5,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Three-State Process Simulation</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e0f7fa;
+    body {
+            background-color: #100134;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
             text-align: center;
         }
-        .state-box {
-            display: inline-block;
-            width: 200px;
-            padding: 15px;
-            margin: 10px;
-            border: 2px solid #0288d1;
-            border-radius: 8px;
-            background-color: #b3e5fc;
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    margin-top: 80px;
+}
+
+.navbar {
+            background-color: #070129;
+            padding: 33px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+
+
+            
         }
-        .log-box {
+
+.navbar h1 {
+    margin: 0;
+    color:  #f5f3f3;
+}
+
+.states {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    width: 60%; /* Adjust this width for proper alignment */
+    max-width: 900px; /* Restrict maximum width for better display */
+}
+
+.state {
+    background-color: #464745;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    flex: 1;
+    margin: 0 10px; /* Adds space between boxes */
+    min-width: 100px; /* Ensure consistent size */
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Allow buttons to wrap if needed */
+}
+
+.button {
+    background-color: #82aaff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+button:hover {
+            background-color: #0beea3;
+            transform: translateY(-2px);
+            transform: scale(1.2);
+            
+        }
+button[onclick="showImage()"] {
             margin-top: 20px;
-            padding: 10px;
-            border: 2px solid #0288d1;
-            border-radius: 8px;
-            background-color: #ffffff;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        input[type="text"] {
-            padding: 8px;
-            border: 1px solid #0288d1;
-            border-radius: 5px;
-            width: 50px;
-            text-align: center;
-        }
-        button {
-            padding: 8px 12px;
-            margin: 5px;
+            background-color: #82aaff;
+            color: #fff;
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
-            background-color: #0288d1;
-            color: #ffffff;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
-            background-color: #0277bd;
+button[onclick="showImage()"]:hover{
+            background-color: #0beea3;
+            transform: scale(1.2);
+
         }
+
+.input-field {
+    background-color: #464745;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    color: #fff;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px; /* Ensure consistent width */
+    text-align: center;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #82aaff;
+}
+
+.log-box {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    width: 60%; /* Match width to align with the states */
+    max-width: 900px; /* Restrict width */
+    min-height: 200px;
+    max-height: 500px;
+    overflow-y: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border: 1px solid #ccc;
+    color: #000;
+}
+
+.log-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.log-box::-webkit-scrollbar-thumb {
+    background-color: #999;
+    border-radius: 4px;
+}
+
+.log-entry {
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+
+  
+
     </style>
 </head>
 <body>
-
-    <h1>Three-State Process Simulation</h1>
-
-    <div class="state-box" id="readyState">Ready<br><span id="readyProcesses">None</span></div>
-    <div class="state-box" id="runningState">Running<br><span id="runningProcesses">None</span></div>
-    <div class="state-box" id="blockedState">Blocked<br><span id="blockedProcesses">None</span></div>
-    <div>
-
-    <input type="text" id="processInput" placeholder="ID">
-    <button onclick="createProcess()">Create Process</button>
-    <button onclick="moveToRunning()">Move to Running</button>
-    <button onclick="moveToBlocked()">Move to Blocked</button>
-    <button onclick="unblockProcess()">Unblock Process</button>
-    <button onclick="terminateProcess()">Terminate Process</button>
+    <div class="navbar">
+        <h1>Three-State Process Simulation</h1>
     </div>
+    <div class="container">
+        <div class="states">
+            <div class="state" id="readyState">Ready<br><span id="readyProcesses">None</span></div>
+            <div class="state" id="runningState">Running<br><span id="runningProcesses">None</span></div>
+            <div class="state" id="blockedState">Blocked<br><span id="blockedProcesses">None</span></div>
+        </div>
+        <input type="text" id="processInput" class="input-field" placeholder="ID">
+        <div class="actions">
+            <button class="button" onclick="createProcess()">Create Process</button>
+            <button class="button" onclick="moveToRunning()">Move to Running</button>
+            <button class="button" onclick="moveToBlocked()">Move to Blocked</button>
+            <button class="button" onclick="unblockProcess()">Unblock Process</button>
+            <button class="button" onclick="terminateProcess()">Terminate Process</button>
+        </div>
+        <div class="log-box" id="log"></div>
+        <button onclick="showImage()">Click to Show Image</button>
+    <img id="image" src="" alt="">
+    </div>
+</body>
 
-    <div class="log-box" id="log"></div>
+    
 
     <script>
         let readyProcesses = [];
@@ -146,6 +265,14 @@
                 logAction("No process in Running state to terminate.");
             }
         }
+        function showImage() {
+            document.getElementById("image").style.display = "block";
+        }
+        function showImage() {
+    const imageUrl = "3-STATE-DIAGRAM.jpg"; // Replace with your image URL
+    window.open(imageUrl, "_blank"); // Opens the image in a new tab or window
+}
+
 
         // Initial display update
         updateDisplay();
