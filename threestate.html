@@ -178,6 +178,7 @@ button[onclick="showImage()"]:hover{
         <div class="actions">
             <button class="button" onclick="createProcess()">Create Process</button>
             <button class="button" onclick="moveToRunning()">Move to Running</button>
+            <button class="button" onclick="moveToReady()">Time Out</button>
             <button class="button" onclick="moveToBlocked()">Move to Blocked</button>
             <button class="button" onclick="unblockProcess()">Unblock Process</button>
             <button class="button" onclick="terminateProcess()">Terminate Process</button>
@@ -231,6 +232,18 @@ button[onclick="showImage()"]:hover{
                 logAction("No process in Ready state to move to Running.");
             }
         }
+
+        function moveToReady() {
+    if (runningProcesses.length > 0) {
+        const processId = runningProcesses.shift();
+        readyProcesses.push(processId);
+        logAction(`Process ${processId} moved back to Ready state from Running.`);
+        updateDisplay();
+    } else {
+        logAction("No process in Running state to move back to Ready.");
+    }
+}
+
 
         function moveToBlocked() {
             if (runningProcesses.length > 0) {
