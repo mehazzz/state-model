@@ -168,6 +168,7 @@
             <button onclick="createProcess()">Create Process</button>
             <button onclick="moveToRunning()">Move to Running</button>
             <button onclick="moveToNotRunning()">Move to Not Running</button>
+            <button class="button" onclick="terminateProcess()">Terminate Process</button>
         </div>
         <div class="log-box" id="log"></div>
         <button onclick="showImage()">Click to Show Image</button>
@@ -224,6 +225,17 @@
                 updateDisplay();
             } else {
                 logAction("No process in Running state to move to Not Running.");
+            }
+        }
+        function terminateProcess() {
+            if (runningProcesses.length > 0) {
+                const processId = runningProcesses.shift();
+                runningProcesses.pop(processId);
+                logAction(`Process ${processId} is terminated.`);
+                updateDisplay();
+                checkSuspendedQueues();
+            } else {
+                logAction("No process in Running state to terminate.");
             }
         }
         
