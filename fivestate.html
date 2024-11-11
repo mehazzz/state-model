@@ -218,6 +218,7 @@
             <button class="button" onclick="createProcess()">Create Process</button>
             <button class="button" onclick="moveToReady()">Move to Ready</button>
             <button class="button" onclick="moveToRunning()">Move to Running</button>
+            <button class="button" onclick="moveToReadyFromRunning()">Time out</button>
             <button class="button" onclick="moveToBlocked()">Move to Blocked</button>
             <button class="button" onclick="unblockProcess()">Unblock Process</button>
             <button class="button" onclick="terminateProcess()">Terminate Process</button>
@@ -238,8 +239,9 @@
         let exitProcesses = [];
 
         const READY_LIMIT = 3;
-        const READY_SUSPEND_LIMIT = 2;
-        const BLOCKED_SUSPEND_LIMIT = 2;
+        // const BLOCKED_LIMIT=3;
+        const READY_SUSPEND_LIMIT = 10;
+        const BLOCKED_SUSPEND_LIMIT = 3;
         function updateDisplay() {
     document.getElementById('newProcesses').innerHTML = newProcesses.length ? newProcesses.join('<br>') : 'None';
     document.getElementById('readyProcesses').innerHTML = readyProcesses.length ? readyProcesses.join('<br>') : 'None';
@@ -299,6 +301,29 @@
                 logAction(`Running state is occupied. Cannot move new process.`);
             }
         }
+
+        function moveToReadyFromRunning() {
+    if (runningProcesses.length > 0) {
+        const processId = runningProcesses.shift();
+        if (readyProcesses.length < READY_LIMIT) {
+            readyProcesses.push(processId);
+            logAction(`Process ${processId} moved back to Ready state from Running.`);
+        } else if (readySuspendProcesses.length < READY_SUSPEND_LIMIT) {
+            readySuspendProcesses.push(processId);
+            logAction(`Process ${processId} moved to Ready Suspend from Running due to full Ready queue.`);
+        } else {
+            logAction(`Process ${processId} could not move to Ready Suspend; limit reached.`);
+        }
+        updateDisplay();
+        checkSuspendedQueues();
+    } else {
+        logAction("No process in Running state to move back to Ready.");
+    }
+}
+
+
+
+        
         function moveToBlocked() {
     if (runningProcesses.length > 0) {
         const processId = runningProcesses.shift();
